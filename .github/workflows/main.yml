@@ -1,4 +1,4 @@
-name: Push a Docker Image
+name: PushDockerImage
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   train:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
     steps:
@@ -27,7 +27,7 @@ jobs:
 
   test:
     needs: train
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
     steps:
@@ -47,7 +47,7 @@ jobs:
 
   build:
     needs: [train, test]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
     steps:
@@ -71,7 +71,7 @@ jobs:
 
   push-image:
     needs: [train, test, build]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - name: Repo Checkout
       uses: actions/checkout@v2
@@ -85,7 +85,7 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASS_TOKEN }}
-      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
     - name: Build the Docker image for Fastapi app
       env:
